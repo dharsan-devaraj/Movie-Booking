@@ -3,49 +3,36 @@ import random
 import csv
 
 
-# UTILITY FUNCTION
-
-def choose_option(title, options):
+def menu(title, options):
     while True:
-        print(f"\n{title}")
-        for key, value in options.items():
-            print(f"{key}. {value}")
+        print("\n" + title)
+        for key in options:
+            print(f"{key}. {options[key]}")
 
-        choice = input("Enter choice: ")
+        choice = input("Enter choice: ").strip()
 
         if choice in options:
             return options[choice]
-        else:
-            print("❌ Wrong choice. Try again.")
+        print("Invalid choice. Try again.")
 
 
-# CITY
-
-def choose_city():
-    cities = {
+def select_city():
+    return menu("Select City", {
         "1": "Chennai",
         "2": "Mumbai",
         "3": "Bangalore"
-    }
-    return choose_option("Choose City", cities)
+    })
 
 
-
-# LANGUAGE
-
-def choose_language():
-    languages = {
+def select_language():
+    return menu("Select Language", {
         "1": "Tamil",
         "2": "English",
         "3": "Hindi"
-    }
-    return choose_option("Choose Language", languages)
+    })
 
 
-
-# GENRE & MOVIES
-
-movies = {
+MOVIES = {
     "Tamil": {
         "Action": ["Master", "Karnan", "Teddy"],
         "Family": ["Doctor", "Annaatthe"],
@@ -67,125 +54,123 @@ movies = {
 }
 
 
-def choose_genre(language):
-    genres = {str(i+1): g for i, g in enumerate(movies[language].keys())}
-    return choose_option("Choose Genre", genres)
+def select_genre(language):
+    genre_list = {}
+    i = 1
+    for genre in MOVIES[language]:
+        genre_list[str(i)] = genre
+        i += 1
+
+    return menu("Select Genre", genre_list)
 
 
-def choose_movie(language, genre):
-    movie_list = movies[language][genre]
-    options = {str(i+1): movie for i, movie in enumerate(movie_list)}
-    return choose_option("Choose Movie", options)
+def select_movie(language, genre):
+    movie_list = {}
+    for i in range(len(MOVIES[language][genre])):
+        movie_list[str(i + 1)] = MOVIES[language][genre][i]
+
+    return menu("Select Movie", movie_list)
 
 
-
-# THEATRE & SCREEN
-
-def choose_theatre():
-    theatres = {
-        "1": "Inox Theatre",
-        "2": "Icon Theatre",
-        "3": "Fox Theatre"
-    }
-    return choose_option("Choose Theatre", theatres)
+def select_theatre():
+    return menu("Select Theatre", {
+        "1": "INOX",
+        "2": "ICON",
+        "3": "FOX"
+    })
 
 
-def choose_screen():
-    screens = {
+def select_screen():
+    return menu("Select Screen", {
         "1": "Screen 1",
         "2": "Screen 2",
         "3": "Screen 3"
-    }
-    return choose_option("Choose Screen", screens)
+    })
 
 
-
-# TIME SLOT
-
-def choose_time():
-    times = {
+def select_show_time():
+    timings = {
         "1": "10:00",
         "2": "13:10",
         "3": "16:20",
         "4": "19:30"
     }
-    chosen = choose_option("Choose Time Slot", times)
 
+    time_selected = menu("Select Show Time", timings)
     today = datetime.datetime.now()
-    date = int(input("Enter date (dd): "))
-    month = int(input("Enter month (mm): "))
-    year = today.year
 
-    booking_time = datetime.datetime.strptime(
-        f"{date}/{month}/{year} {chosen}",
-        "%d/%m/%Y %H:%M"
-    )
+    try:
+        day = int(input("Enter day (dd): "))
+        month = int(input("Enter month (mm): "))
+        year = today.year
 
-    if booking_time < today:
-        print("❌ Slot expired. Choose again.")
-        return choose_time()
+        show_time = datetime.datetime.strptime(
+            f"{day}/{month}/{year} {time_selected}",
+            "%d/%m/%Y %H:%M"
+        )
 
-    return booking_time
+        if show_time < today:
+            print("Show time already passed.")
+            return select_show_time()
 
+        return show_time
 
+    except ValueError:
+        print("Invalid date format.")
+        return select_show_time()
 
-# PAYMENT
 
 def payment():
-    seats = int(input("\nHow many seats? "))
+    seats = int(input("Number of seats: "))
     total = seats * 300
 
-    print("Total Cost: Rs.", total)
+    print(f"Total amount: Rs. {total}")
 
-    mode = choose_option(
-        "Choose Payment Method",
-        {"1": "Cash", "2": "Card"}
-    )
+    mode = menu("Payment Method", {
+        "1": "Cash",
+        "2": "Card"
+    })
 
     if mode == "Card":
-        card = input("Enter 12-digit card number: ")
-        cvv = input("Enter CVV: ")
+        input("Enter card number: ")
+        input("Enter CVV: ")
         otp = random.randint(1000, 9999)
         print("OTP:", otp)
-        print("Transaction Successful ✅")
+        input("Enter OTP: ")
+        print("Payment successful")
 
     return seats, total
 
 
+# -------- MAIN FLOW --------
 
-# MAIN FLOW
+print("\nMOVIE TICKET BOOKING SYSTEM")
 
-print("\n🎬 WELCOME TO MOVIE TICKET BOOKING 🎬")
+city = select_city()
+language = select_language()
+genre = select_genre(language)
+movie = select_movie(language, genre)
+theatre = select_theatre()
+screen = select_screen()
+show_time = select_show_time()
+seats, amount = payment()
 
-city = choose_city()
-language = choose_language()
-genre = choose_genre(language)
-movie = choose_movie(language, genre)
-theatre = choose_theatre()
-screen = choose_screen()
-time_slot = choose_time()
-seats, total_cost = payment()
-
-
-# TICKET PRINT
-
-print("\n🎟️ TICKET DETAILS 🎟️")
-print("----------------------------------")
+print("\n------ TICKET DETAILS ------")
 print("City:", city)
 print("Language:", language)
 print("Movie:", movie)
 print("Theatre:", theatre)
 print("Screen:", screen)
-print("Time:", time_slot)
+print("Show Time:", show_time)
 print("Seats:", seats)
-print("Amount Paid: Rs.", total_cost)
-print("----------------------------------")
-print("ENJOY YOUR MOVIE 🍿")
+print("Amount Paid:", amount)
+print("----------------------------")
 
-
-# STORE TO CSV
-
-with open("tickets.csv", "w", newline="") as file:
+with open("tickets.csv", "a", newline="") as file:
     writer = csv.writer(file)
-    writer.writerow(["City", "Language", "Movie", "Theatre", "Screen", "Time", "Seats", "Cost"])
-    writer.writerow([city, language, movie, theatre, screen, time_slot, seats, total_cost])
+    writer.writerow([
+        city, language, movie, theatre,
+        screen, show_time, seats, amount
+    ])
+
+print("Ticket stored successfully.")
