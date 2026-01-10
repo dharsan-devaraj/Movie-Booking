@@ -1,29 +1,37 @@
 # 🎬 Movie Ticket Booking System (Python)
 
-## ⚙️ Features
+This is a simple **command-line based movie ticket booking system** built using Python.
+The project focuses on core programming concepts like functions, conditionals, loops, file handling, and working with date & time.
 
-* City selection
-* Language-based movie filtering
-* Genre and movie selection
-* Theatre and screen selection
-* Show time validation using current date and time
-* Seat booking and bill calculation
-* Basic payment simulation (Cash / Card)
-* Ticket details stored in a CSV file
+It allows users to select a city, choose a movie based on language and genre, book seats, and generate a basic bill. Booking details are saved locally in a CSV file.
 
 ---
 
-## 🖥️ How to Run
+## ⚙️ Features
 
-1. Make sure Python is installed on your system
-2. Clone the repository or download the files
-3. Run the program using:
+* Select city
+* Filter movies by language
+* Choose genre and movie
+* Select theatre and screen
+* Show time validation using current date and time
+* Seat booking with total bill calculation
+* Simple payment option (Cash / Card)
+* Booking details stored in a CSV file
+
+---
+
+## 🖥️ How to Run the Program
+
+1. Make sure **Python** is installed on your system
+2. Download or clone this repository
+3. Open a terminal in the project folder
+4. Run the program using:
 
 ```bash
 python main.py
 ```
 
-4. Follow the on-screen instructions
+5. Follow the instructions shown on the screen
 
 ---
 
@@ -36,4 +44,6 @@ python main.py
 └── README.md
 ```
 
-`tickets.csv` is used to store booking details.
+* **main.py** – Contains the complete logic for the booking system
+* **tickets.csv** – Stores ticket booking details (generated/updated automatically)
+* **README.md** – Project description and instructions.
