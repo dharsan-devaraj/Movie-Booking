@@ -124,18 +124,38 @@ def select_show_time():
         return select_show_time()
 
 
-def payment():
+def select_seat_type():
+    return menu("Select Seat Type", {
+        "1": "Silver",
+        "2": "Gold",
+        "3": "Platinum"
+    })
+
+
+def payment(seat_type):
     while True:
         seats = int(input("Number of seats: "))
         if seats > 0:
             break
         print("❌ Seats must be greater than 0")
 
-    price_per_seat = 300
+    price_chart = {
+        "Silver": 200,
+        "Gold": 300,
+        "Platinum": 450
+    }
+
+    price_per_seat = price_chart[seat_type]
     total = seats * price_per_seat
 
-    print(f"\n💰 Ticket Price: ₹{price_per_seat}")
-    print(f"💳 Total Amount: ₹{total}")
+    if seats >= 5:
+        discount = total * 0.10
+        total -= discount
+        print(f"🎉 Bulk Booking Discount Applied: ₹{int(discount)}")
+
+    print(f"\n💺 Seat Type: {seat_type}")
+    print(f"💰 Ticket Price: ₹{price_per_seat}")
+    print(f"💳 Total Amount: ₹{int(total)}")
 
     mode = menu("Payment Method", {
         "1": "Cash",
@@ -147,15 +167,22 @@ def payment():
         input("Enter CVV: ")
         otp = random.randint(1000, 9999)
         print("📩 OTP sent:", otp)
-        input("Enter OTP: ")
+
+        user_otp = input("Enter OTP: ")
+        if user_otp != str(otp):
+            print("❌ Invalid OTP. Payment Failed.")
+            return payment(seat_type)
+
         print("✅ Payment Successful!")
 
-    return seats, total
+    return seats, int(total)
 
 
 # -------- MAIN FLOW --------
 
 print("\n🎬 WELCOME TO MOVIE TICKET BOOKING SYSTEM 🎬")
+
+ticket_id = random.randint(100000, 999999)
 
 city = select_city()
 language = select_language()
@@ -164,27 +191,32 @@ movie = select_movie(language, genre)
 theatre = select_theatre()
 screen = select_screen()
 show_time = select_show_time()
-seats, amount = payment()
+seat_type = select_seat_type()
+seats, amount = payment(seat_type)
 
-print("\n" + "=" * 40)
+print("\n" + "=" * 45)
 print("🎟️ TICKET CONFIRMATION")
-print("=" * 40)
+print("=" * 45)
+print("Ticket ID  :", ticket_id)
 print("City       :", city)
 print("Language   :", language)
 print("Movie      :", movie)
 print("Theatre    :", theatre)
 print("Screen     :", screen)
+print("Seat Type  :", seat_type)
 print("Show Time  :", show_time.strftime("%d-%m-%Y %H:%M"))
 print("Seats      :", seats)
 print("Amount Paid: ₹", amount)
-print("=" * 40)
+print("=" * 45)
 
 with open("tickets.csv", "a", newline="") as file:
     writer = csv.writer(file)
     writer.writerow([
-        city, language, movie, theatre,
-        screen, show_time, seats, amount,
-        datetime.datetime.now()
+        ticket_id, city, language, movie,
+        theatre, screen, seat_type,
+        show_time.strftime("%d-%m-%Y %H:%M"),
+        seats, amount,
+        datetime.datetime.now().strftime("%d-%m-%Y %H:%M")
     ])
 
 print("📁 Ticket saved successfully!")
